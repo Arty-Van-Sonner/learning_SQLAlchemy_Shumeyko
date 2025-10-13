@@ -20,9 +20,9 @@ async_engine = create_async_engine(
 #     res = conn.execute(text('SELECT VERSION()'))
 #     print(f'{res.all()=}')
 
-async def get_version():
-    async with async_engine.connect() as conn:
-        res = await conn.execute(text('SELECT VERSION()'))
-        print(f'{res.all()=}')
+# async def get_version():
+#     async with async_engine.connect() as conn:
+#         res = await conn.execute(text('SELECT VERSION()'))
+#         print(f'{res.all()=}')
 
-asyncio.run(get_version())
+# asyncio.run(get_version())
