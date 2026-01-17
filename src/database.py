@@ -1,6 +1,6 @@
 import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine, async_session, AsyncSession
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 from sqlalchemy import URL, create_engine, text
 from src.queries.config import settings
 
@@ -16,6 +16,14 @@ async_engine = create_async_engine(
     echo=True,
 )
 
+class Base(DeclarativeBase):
+    '''
+    Docstring for Base
+    '''
+
+sync_session = sessionmaker(sync_engine)
+async_session = async_sessionmaker(async_engine)
+
 # with sync_engine.connect() as conn:
 #     res = conn.execute(text('SELECT VERSION()'))
 #     print(f'{res.all()=}')
@@ -26,3 +34,8 @@ async_engine = create_async_engine(
 #         print(f'{res.all()=}')
 
 # asyncio.run(get_version())
+
+class Base(DeclarativeBase):
+    """
+    Docstring for Base
+    """
