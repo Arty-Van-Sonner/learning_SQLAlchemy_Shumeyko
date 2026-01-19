@@ -2,7 +2,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData
 from sqlalchemy.orm import Mapped, mapped_column
 from database import Base
 
-metadata_obj = MetaData()
+metadata_obj = Base.metadata
 
 # Создание таблиц без использования полноценного ORM
 employees_table = Table(

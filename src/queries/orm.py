@@ -3,7 +3,7 @@ from src.database import sync_engine, async_session, sync_session
 from src.models import metadata_obj, EmployeesOrm
 
 def create_tables():
-    sync_engine.echo = False
+    sync_engine.echo = True
     metadata_obj.create_all(sync_engine)
     sync_engine.echo = True
 
