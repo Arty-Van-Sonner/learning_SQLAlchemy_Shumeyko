@@ -25,8 +25,14 @@ from src.queries.orm import SyncOrm, AsyncOrm
 
 # SyncCore.select_employees()
 
-SyncOrm.select_employee()
-print()
-SyncOrm.update_employee()
-print()
-SyncOrm.select_employee()
+# SyncOrm.insert_employee()
+
+# SyncOrm.select_employee()
+# print()
+# SyncOrm.update_employee()
+# print()
+# SyncOrm.select_employee()
+
+# SyncOrm.insert_resumes()
+
+SyncOrm.select_resumes_avg_compensation()
