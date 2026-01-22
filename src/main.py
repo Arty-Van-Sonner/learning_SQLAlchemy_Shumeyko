@@ -3,6 +3,7 @@ import os
 import sys
 
 from fastapi import FastAPI
+import uvicorn
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
@@ -35,4 +36,33 @@ from src.queries.orm import SyncOrm, AsyncOrm
 
 # SyncOrm.insert_resumes()
 
-SyncOrm.select_resumes_avg_compensation()
+# SyncOrm.select_resumes_avg_compensation()
+
+# SyncOrm.insert_additional_resumes()
+
+# asyncio.run(AsyncOrm.join_cte_subquery_window_func())
+
+async def main():
+    # ========== SYNC ==========
+    #CORE
+    if '--core' in sys.argv and '--sync' in sys.argv:
+        if '--create' in sys.argv:
+            SyncCore.create_tables()
+        if '--get' in sys.argv:
+            SyncCore.select_employees()
+            SyncCore.select_resumes_avg_compensation()
+            SyncCore.join_cte_subquery_window_func()
+
+
+    # ========== ASYNC ==========
+    # if 
+
+    await AsyncOrm.join_cte_subquery_window_func()
+
+if __name__ == '__main__':
+    asyncio.run(main())
+    if "--webserver" in sys.argv:
+        uvicorn.run(
+            app="src.main:app",
+            reload=True,
+        )

@@ -1,6 +1,6 @@
 # from turtle import update
 from sqlalchemy import insert, text, select, update
-from src.database import sync_engine, async_engine
+from src.database import sync_engine, async_engine, sync_session
 from src.models import employees_table, metadata_obj
 
 
