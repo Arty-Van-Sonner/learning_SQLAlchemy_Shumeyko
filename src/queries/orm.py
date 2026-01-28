@@ -2,7 +2,7 @@
 from turtle import title
 from unittest import result
 from sqlalchemy import Integer, text, insert, select, func, cast, and_
-from sqlalchemy.orm import aliased
+from sqlalchemy.orm import aliased, joinedload, selectinload
 from src.database import sync_engine, async_session, sync_session
 from src.models import metadata_obj, EmployeesOrm, ResumesOrm, Workload
 
@@ -141,6 +141,41 @@ class SyncOrm:
             insert_resumes = insert(ResumesOrm).values(resumes)
             session.execute(insert_resumes)
             session.commit()
+
+    @staticmethod
+    def select_employees_with_lazy_relationship():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+            )
+            res = session.execute(query)
+            result = res.scalars().all()
+            print(f'{result[0].resumes=}')
+            print(f'{result[1].resumes=}')
+
+    @staticmethod
+    def select_employees_with_joined_relationship():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+                .options(joinedload(EmployeesOrm.resumes))
+            )
+            res = session.execute(query)
+            result = res.unique().scalars().all()
+            print(f'{result[0].resumes=}')
+            print(f'{result[1].resumes=}')
+
+    @staticmethod
+    def select_employees_with_selectin_relationship():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+                .options(selectinload(EmployeesOrm.resumes))
+            )
+            res = session.execute(query)
+            result = res.unique().scalars().all()
+            print(f'\n\n{result[0].resumes=}\n\n')
+            print(f'{result[1].resumes=}\n\n')
 
 class AsyncOrm:
     """

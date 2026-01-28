@@ -21,6 +21,12 @@ class Base(DeclarativeBase):
     '''
     Docstring for Base
     '''
+    type_annotation_map = {
+        
+    }
+    def __repr__(self):
+        cols = [f'{col}={getattr(self, col)}' for col  in self.__table__.columns.keys()]
+        return f'<{self.__class__.__name__} {", ".join(cols)}>'
 
 sync_session = sessionmaker(sync_engine)
 async_session = async_sessionmaker(async_engine)
@@ -42,6 +48,17 @@ class Base(DeclarativeBase):
     """
     Docstring for Base
     """
+    repr_cols_num = 3
+    repr_cols = tuple()
+
     type_annotation_map = {
         str_256: String(256)
     }
+    def __repr__(self):
+        # cols = [f'{col}={getattr(self, col)}' for col in self.__table__.columns.keys()]
+        # return f'<{self.__class__.__name__} {", ".join(cols)}>'
+        cols = []
+        for idx, col in enumerate(self.__table__.columns.keys()):
+            if col in self.repr_cols or idx < self.repr_cols_num:
+                cols.append(f'{col}={getattr(self, col)}')
+        return f'<{self.__class__.__name__} {", ".join(cols)}>'

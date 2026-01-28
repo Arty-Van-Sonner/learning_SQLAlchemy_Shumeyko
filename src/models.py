@@ -2,7 +2,7 @@ import datetime
 from typing import Annotated
 from turtle import update
 from sqlalchemy import ForeignKey, Table, Column, Integer, String, MetaData, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base, str_256
 import enum
 
@@ -32,6 +32,8 @@ class EmployeesOrm(Base):
     id: Mapped[intpk]
     username: Mapped[str] = mapped_column()
 
+    resumes: Mapped[list['ResumesOrm']] = relationship()
+
 class Workload(enum.Enum):
     parttime = 'parttime'
     fulltime = 'fulltime'
@@ -52,3 +54,7 @@ class ResumesOrm(Base):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
+    employee: Mapped['EmployeesOrm'] = relationship()
+    
+    repr_cols_num = 4
+    repr_cols = ('create_at',)

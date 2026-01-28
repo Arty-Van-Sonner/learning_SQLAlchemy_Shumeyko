@@ -57,7 +57,9 @@ async def main():
     # ========== ASYNC ==========
     # if 
 
-    await AsyncOrm.join_cte_subquery_window_func()
+    # SyncOrm.select_employees_with_lazy_relationship()
+    # SyncOrm.select_employees_with_joined_relationship()
+    SyncOrm.select_employees_with_selectin_relationship()
 
 if __name__ == '__main__':
     asyncio.run(main())

@@ -1,4 +1,4 @@
 # learning_SQLAlchemy_Shumeyko
 https://www.youtube.com/playlist?list=PLeLN0qH0-mCXARD_K-USF2wHctxzEVp40
 
-lesson 8 (COMPLEX queries: JOIN, CTE, Subquery, Window functions)
+lesson 9 (Introduction to RELATIONSHIP - The Power of ORM)
