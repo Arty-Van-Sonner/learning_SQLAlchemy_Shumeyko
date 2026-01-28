@@ -2,7 +2,7 @@
 from turtle import title
 from unittest import result
 from sqlalchemy import Integer, text, insert, select, func, cast, and_
-from sqlalchemy.orm import aliased, joinedload, selectinload
+from sqlalchemy.orm import aliased, joinedload, selectinload, contains_eager
 from src.database import sync_engine, async_session, sync_session
 from src.models import metadata_obj, EmployeesOrm, ResumesOrm, Workload
 
@@ -176,6 +176,54 @@ class SyncOrm:
             result = res.unique().scalars().all()
             print(f'\n\n{result[0].resumes=}\n\n')
             print(f'{result[1].resumes=}\n\n')
+
+    @staticmethod
+    def select_employees_with_condition_relationship():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+                .options(selectinload(EmployeesOrm.resumes_parttime))
+            )
+            res = session.execute(query)
+            result = res.scalars().all()
+
+            print(f'\n\n{result}\n\n')
+
+    @staticmethod
+    def select_employees_with_condition_relationship_contains_eager():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+                .join(EmployeesOrm.resumes)
+                .options(contains_eager(EmployeesOrm.resumes))
+                .filter(ResumesOrm.workload == Workload.parttime)
+            )
+            res = session.execute(query)
+            result = res.scalars().all()
+
+            print(f'\n\n{result}\n\n')
+
+    @staticmethod
+    def select_employees_with_condition_relationship_contains_eager_with_limit():
+        with sync_session() as session:
+            subq = (
+                select(ResumesOrm.id.label('parttime_resume_id'))
+                .filter(ResumesOrm.employee_id == EmployeesOrm.id)
+                .order_by(EmployeesOrm.id.desc())
+                .limit(2)
+                .scalar_subquery()
+                .correlate(EmployeesOrm)
+            )
+            query = (
+                select(EmployeesOrm)
+                .join(ResumesOrm, ResumesOrm.id.in_(subq))
+                .options(contains_eager(EmployeesOrm.resumes))
+                # .filter(ResumesOrm.workload == Workload.parttime)
+            )
+            res = session.execute(query)
+            result = res.unique().scalars().all()
+
+            print(f'\n\n{result}\n\n')
 
 class AsyncOrm:
     """

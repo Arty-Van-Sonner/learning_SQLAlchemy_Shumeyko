@@ -59,7 +59,10 @@ async def main():
 
     # SyncOrm.select_employees_with_lazy_relationship()
     # SyncOrm.select_employees_with_joined_relationship()
-    SyncOrm.select_employees_with_selectin_relationship()
+    # SyncOrm.select_employees_with_selectin_relationship()
+    # SyncOrm.select_employees_with_condition_relationship()
+    # SyncOrm.select_employees_with_condition_relationship_contains_eager()
+    SyncOrm.select_employees_with_condition_relationship_contains_eager_with_limit()
 
 if __name__ == '__main__':
     asyncio.run(main())

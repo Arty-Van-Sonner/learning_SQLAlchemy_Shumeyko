@@ -1,7 +1,9 @@
+from ast import In
 import datetime
+from tabnanny import check
 from typing import Annotated
 from turtle import update
-from sqlalchemy import ForeignKey, Table, Column, Integer, String, MetaData, text
+from sqlalchemy import ForeignKey, Table, Column, Integer, String, MetaData, text, CheckConstraint, Index, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base, str_256
 import enum
@@ -25,6 +27,10 @@ employees_table = Table(
     Column('username', String)
 )
 
+class Workload(enum.Enum):
+    parttime = 'parttime'
+    fulltime = 'fulltime'
+
 # ORM подход
 class EmployeesOrm(Base):
     __tablename__ = 'employees_orm'
@@ -32,11 +38,15 @@ class EmployeesOrm(Base):
     id: Mapped[intpk]
     username: Mapped[str] = mapped_column()
 
-    resumes: Mapped[list['ResumesOrm']] = relationship()
-
-class Workload(enum.Enum):
-    parttime = 'parttime'
-    fulltime = 'fulltime'
+    resumes: Mapped[list['ResumesOrm']] = relationship(
+        back_populates='employee',
+    )
+    resumes_parttime: Mapped[list['ResumesOrm']] = relationship(
+        back_populates='employee',
+        primaryjoin=f'and_(EmployeesOrm.id == ResumesOrm.employee_id, ResumesOrm.workload == \'{Workload.parttime}\')',
+        order_by='ResumesOrm.id.desc()',
+        # lazy='selectin',
+    )
 
 class ResumesOrm(Base):
     __tablename__ = 'resumes_orm'
@@ -54,7 +64,15 @@ class ResumesOrm(Base):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
-    employee: Mapped['EmployeesOrm'] = relationship()
+    employee: Mapped['EmployeesOrm'] = relationship(
+        back_populates='resumes',
+    )
     
     repr_cols_num = 4
     repr_cols = ('create_at',)
+
+    __table_args__ = (
+        # PrimaryKeyConstraint('id'),
+        Index('title_index', 'title'),
+        CheckConstraint('compensation > 0', name='checl_compensation_positive')
+    )
