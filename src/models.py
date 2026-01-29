@@ -5,7 +5,7 @@ from typing import Annotated
 from turtle import update
 from sqlalchemy import ForeignKey, Table, Column, Integer, String, MetaData, text, CheckConstraint, Index, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from database import Base, str_256
+from src.database import Base, str_256
 import enum
 
 intpk = Annotated[int, mapped_column(primary_key=True)]

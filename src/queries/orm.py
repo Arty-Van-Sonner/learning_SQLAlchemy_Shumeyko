@@ -1,8 +1,10 @@
 # from unittest import result
+from operator import contains
 from turtle import title
 from unittest import result
 from sqlalchemy import Integer, text, insert, select, func, cast, and_
 from sqlalchemy.orm import aliased, joinedload, selectinload, contains_eager
+from src.schemas import EmployeesRelDTO
 from src.database import sync_engine, async_session, sync_session
 from src.models import metadata_obj, EmployeesOrm, ResumesOrm, Workload
 
@@ -224,6 +226,22 @@ class SyncOrm:
             result = res.unique().scalars().all()
 
             print(f'\n\n{result}\n\n')
+
+    @staticmethod
+    def convert_employees_to_dto():
+        with sync_session() as session:
+            query = (
+                select(EmployeesOrm)
+                .options(selectinload(EmployeesOrm.resumes))
+                .limit(2)
+            )
+
+            res = session.execute(query)
+            result_orm = res.scalars().all()
+            print(f'\n\n{result_orm=}\n\n')
+            result_dto = [EmployeesRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f'{result_dto=}\n\n')
+            return result_dto
 
 class AsyncOrm:
     """

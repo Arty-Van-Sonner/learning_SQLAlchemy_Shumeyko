@@ -3,6 +3,7 @@ import os
 import sys
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
@@ -42,6 +43,25 @@ from src.queries.orm import SyncOrm, AsyncOrm
 
 # asyncio.run(AsyncOrm.join_cte_subquery_window_func())
 
+def create_fastapi_app():
+    app = FastAPI(title="FastAPI")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+    )
+        
+    @app.get("/employees")#, tags=["Кандидат"])
+    async def get_workers():
+        employees = SyncOrm.convert_employees_to_dto()
+        return employees
+        
+    # @app.get("/resumes", tags=["Резюме"])
+    # async def get_resumes():
+    #     resumes = await AsyncOrm.select_resumes_with_all_relationships()
+    #     return resumes
+    
+    return app
+
 async def main():
     # ========== SYNC ==========
     #CORE
@@ -62,7 +82,11 @@ async def main():
     # SyncOrm.select_employees_with_selectin_relationship()
     # SyncOrm.select_employees_with_condition_relationship()
     # SyncOrm.select_employees_with_condition_relationship_contains_eager()
-    SyncOrm.select_employees_with_condition_relationship_contains_eager_with_limit()
+    # SyncOrm.select_employees_with_condition_relationship_contains_eager_with_limit()
+
+    SyncOrm.convert_employees_to_dto()
+
+app = create_fastapi_app()
 
 if __name__ == '__main__':
     asyncio.run(main())
