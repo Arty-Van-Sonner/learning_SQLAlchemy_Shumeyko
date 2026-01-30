@@ -2,11 +2,12 @@
 from operator import contains
 from turtle import title
 from unittest import result
+from requests import session
 from sqlalchemy import Integer, text, insert, select, func, cast, and_
 from sqlalchemy.orm import aliased, joinedload, selectinload, contains_eager
-from src.schemas import EmployeesRelDTO
+from src.schemas import EmployeesRelDTO, ResumesRelVacanciesRepliedDTO
 from src.database import sync_engine, async_session, sync_session
-from src.models import metadata_obj, EmployeesOrm, ResumesOrm, Workload
+from src.models import VacanciesOrm, metadata_obj, EmployeesOrm, ResumesOrm, Workload
 
 
 class SyncOrm:
@@ -242,6 +243,32 @@ class SyncOrm:
             result_dto = [EmployeesRelDTO.model_validate(row, from_attributes=True) for row in result_orm]
             print(f'{result_dto=}\n\n')
             return result_dto
+        
+    @staticmethod
+    def add_vacancies_and_replies():
+        with sync_session() as session:
+            new_vacancy = VacanciesOrm(title='Python developer', compensation=100000)
+            resume_1 = session.get(ResumesOrm, 1)
+            resume_2 = session.get(ResumesOrm, 2)
+            resume_1.vacancies_replied.append(new_vacancy)
+            resume_2.vacancies_replied.append(new_vacancy)
+            session.commit()
+
+    @staticmethod
+    def select_resumes_with_all_relationships():
+        with sync_session() as session:
+            query = (
+                select(ResumesOrm)
+                .options(joinedload(ResumesOrm.employee))
+                .options(selectinload(ResumesOrm.vacancies_replied).load_only(VacanciesOrm.title))
+            )
+
+            res = session.execute(query)
+            result_orm = res.unique().scalars().all()
+            print(f'\n\n{result_orm=}\n\n')
+            result_dto = [ResumesRelVacanciesRepliedDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f'{result_dto=}\n\n')
+            return result_dto
 
 class AsyncOrm:
     """
@@ -316,3 +343,19 @@ class AsyncOrm:
             result = res.all()
 
             print(f'\n\n{result=}\n\n')
+
+    @staticmethod
+    async def select_resumes_with_all_relationships():
+        async with async_session() as session:
+            query = (
+                select(ResumesOrm)
+                .options(joinedload(ResumesOrm.employee))
+                .options(selectinload(ResumesOrm.vacancies_replied).load_only(VacanciesOrm.title))
+            )
+
+            res = await session.execute(query)
+            result_orm = res.unique().scalars().all()
+            print(f'\n\n{result_orm=}\n\n')
+            result_dto = [ResumesRelVacanciesRepliedDTO.model_validate(row, from_attributes=True) for row in result_orm]
+            print(f'{result_dto=}\n\n')
+            return result_dto

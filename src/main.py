@@ -50,15 +50,16 @@ def create_fastapi_app():
         allow_origins=["*"],
     )
         
-    @app.get("/employees")#, tags=["Кандидат"])
+    @app.get("/employees", tags=["Кандидат"])
     async def get_workers():
         employees = SyncOrm.convert_employees_to_dto()
         return employees
         
-    # @app.get("/resumes", tags=["Резюме"])
-    # async def get_resumes():
-    #     resumes = await AsyncOrm.select_resumes_with_all_relationships()
-    #     return resumes
+    @app.get("/resumes", tags=["Резюме"])
+    async def get_resumes():
+        resumes = SyncOrm.select_resumes_with_all_relationships()
+        # resumes = await AsyncOrm.select_resumes_with_all_relationships()
+        return resumes
     
     return app
 
@@ -84,7 +85,9 @@ async def main():
     # SyncOrm.select_employees_with_condition_relationship_contains_eager()
     # SyncOrm.select_employees_with_condition_relationship_contains_eager_with_limit()
 
-    SyncOrm.convert_employees_to_dto()
+    # SyncOrm.convert_employees_to_dto()
+    # SyncOrm.add_vacancies_and_replies()
+    SyncOrm.select_resumes_with_all_relationships()
 
 app = create_fastapi_app()
 

@@ -1,7 +1,7 @@
 from ast import In
 import datetime
 from tabnanny import check
-from typing import Annotated
+from typing import Annotated, Optional
 from turtle import update
 from sqlalchemy import ForeignKey, Table, Column, Integer, String, MetaData, text, CheckConstraint, Index, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -67,6 +67,11 @@ class ResumesOrm(Base):
     employee: Mapped['EmployeesOrm'] = relationship(
         back_populates='resumes',
     )
+
+    vacancies_replied: Mapped[list['VacanciesOrm']] = relationship(
+        back_populates='resumes_replied',
+        secondary='vacancies_replies_orm',
+    )
     
     repr_cols_num = 4
     repr_cols = ('create_at',)
@@ -76,3 +81,29 @@ class ResumesOrm(Base):
         Index('title_index', 'title'),
         CheckConstraint('compensation > 0', name='checl_compensation_positive')
     )
+
+class VacanciesOrm(Base):
+    __tablename__ = 'vacancies_orm'
+    
+    id: Mapped[intpk]
+    title: Mapped[str_256]
+    compensation: Mapped[Optional[int]]
+
+    resumes_replied: Mapped[list['ResumesOrm']] = relationship(
+        back_populates='vacancies_replied',
+        secondary='vacancies_replies_orm',
+    )
+
+class VacanciesRepliesOrm(Base):
+    __tablename__ = 'vacancies_replies_orm'
+
+    resume_id: Mapped[int] = mapped_column(
+        ForeignKey('resumes_orm.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+    vacancy_id: Mapped[int] = mapped_column(
+        ForeignKey('vacancies_orm.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+
+    cover_letter: Mapped[Optional[str]]
