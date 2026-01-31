@@ -87,7 +87,9 @@ async def main():
 
     # SyncOrm.convert_employees_to_dto()
     # SyncOrm.add_vacancies_and_replies()
-    SyncOrm.select_resumes_with_all_relationships()
+    # SyncOrm.select_resumes_with_all_relationships()
+
+    await AsyncOrm.async_test_connect()
 
 app = create_fastapi_app()
 

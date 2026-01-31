@@ -275,6 +275,13 @@ class AsyncOrm:
     Docstring for AsyncOrm
     """
     @staticmethod
+    async def async_test_connect():
+        async with async_session() as session:
+            res = await session.execute(text('select 128 as t, 256 as n'))
+            result = res.all()
+            print(f'\n\n{result=}\n\n')
+
+    @staticmethod
     async def async_insert_data():
         async with async_session() as session:
             employee_beaver = EmployeesOrm(username='Beaver')

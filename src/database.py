@@ -3,7 +3,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 from sqlalchemy import URL, String, create_engine, text
-from src.queries.config import settings
+from src.config import settings
 
 sync_engine = create_engine(
     url=settings.DATABASE_URL_psycorg,
