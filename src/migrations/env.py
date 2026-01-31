@@ -14,7 +14,7 @@ from alembic import context
 
 from src.config import settings
 
-from src.models import EmployeesOrm # noqa
+import src.models as models # noqa
 from src.database import Base
 
 # this is the Alembic Config object, which provides
@@ -26,7 +26,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', settings.DATABASE_URL_asyncpg)
+# config.set_main_option('sqlalchemy.url', settings.DATABASE_URL_asyncpg + '?async_fallback=True')
+config.set_main_option('sqlalchemy.url', settings.DATABASE_URL_psycorg)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -79,7 +80,9 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, 
+            target_metadata=target_metadata,
+            compare_server_default=True, # make it possible to create migrations with a change to the default field fill
         )
 
         with context.begin_transaction():

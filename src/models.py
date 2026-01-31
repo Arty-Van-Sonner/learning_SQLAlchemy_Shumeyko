@@ -13,7 +13,7 @@ created_at = Annotated[datetime.datetime, mapped_column(server_default=text('TIM
 updated_at = Annotated[
     datetime.datetime, 
     mapped_column(
-        server_default=text('TIMEZONE(\'utc\', now())'), 
+        server_default=text('TIMEZONE(\'utc\', now() + interval \'1 day\')'), 
         onupdate=datetime.datetime.utcnow)
     ]
 
@@ -24,7 +24,8 @@ employees_table = Table(
     'employees',
     metadata_obj,
     Column('id', Integer, primary_key=True),
-    Column('username', String)
+    Column('username', String),
+    Column('age', Integer),
 )
 
 class Workload(enum.Enum):
@@ -37,6 +38,10 @@ class EmployeesOrm(Base):
     # id: Mapped[int] = mapped_column(primary_key=True)
     id: Mapped[intpk]
     username: Mapped[str] = mapped_column()
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+    description: Mapped[Optional[str]]
+
 
     resumes: Mapped[list['ResumesOrm']] = relationship(
         back_populates='employee',
@@ -88,6 +93,8 @@ class VacanciesOrm(Base):
     id: Mapped[intpk]
     title: Mapped[str_256]
     compensation: Mapped[Optional[int]]
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
 
     resumes_replied: Mapped[list['ResumesOrm']] = relationship(
         back_populates='vacancies_replied',
